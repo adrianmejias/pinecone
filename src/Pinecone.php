@@ -6,54 +6,68 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Config\Repository as Config;
 use AdrianMejias\Pinecone\Contracts\PineconeContract;
 use AdrianMejias\Pinecone\Exceptions\PineconeException;
+use Illuminate\Http\Client\Response;
 
 class Pinecone implements PineconeContract
 {
+    /**
+     * @var \Illuminate\Config\Repository
+     */
     private $config;
 
-    public function __construct(Config $config)
-    {
+    /**
+     * @param \Illuminate\Config\Repository $config
+     */
+    public function __construct(
+        Config $config
+    ) {
         $this->config = $config;
     }
 
-    public function setApiKey(string $apiKey)
-    {
+    public function setApiKey(
+        string $apiKey
+    ): Pinecone {
         $this->config->set('pinecone.api_key', $apiKey);
 
         return $this;
     }
 
-    public function setEnvironment(string $environment)
-    {
+    public function setEnvironment(
+        string $environment
+    ): Pinecone {
         $this->config->set('pinecone.environment', $environment);
 
         return $this;
     }
 
-    public function setEndpoint(string $endpoint)
-    {
+    public function setEndpoint(
+        string $endpoint
+    ): Pinecone {
         $this->config->set('pinecone.controller_host', $endpoint);
 
         return $this;
     }
 
-    public function getApiKey()
+    public function getApiKey(): ?string
     {
         return $this->config->get('pinecone.api_key');
     }
 
-    public function getEnvironment()
+    public function getEnvironment(): ?string
     {
         return $this->config->get('pinecone.environment');
     }
 
-    public function getEndpoint()
+    public function getEndpoint(): ?string
     {
         return $this->config->get('pinecone.controller_host');
     }
 
-    public function request($method, $uri = '', $options = [])
-    {
+    public function request(
+        string $method,
+        string $uri = '',
+        array $options = []
+    ): Response {
         $headers = [
             'Authorization' => 'Bearer ' . $this->config->get('pinecone.api_key'),
             'Content-Type' => 'application/json',
@@ -61,12 +75,13 @@ class Pinecone implements PineconeContract
         ];
 
         $options['headers'] = array_merge($options['headers'] ?? [], $headers);
-        
+
         $url = $this->config->get('pinecone.controller_host') . $uri;
 
         return Http::withHeaders(
             $options['headers']
-        )->$method($url, $options['json'] ?? [])
+        )
+            ->$method($url, $options['json'] ?? [])
             ->throw(function ($response, $exception) {
                 throw new PineconeException(
                     $response->json(),
@@ -76,8 +91,10 @@ class Pinecone implements PineconeContract
             });
     }
 
-    public function createIndex(string $indexName, array $schema)
-    {
+    public function createIndex(
+        string $indexName,
+        array $schema
+    ): Response {
         $createIndexRequest = [
             'name' => $indexName,
             'schema' => $schema,
@@ -88,23 +105,28 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function deleteIndex(string $indexName)
-    {
+    public function deleteIndex(
+        string $indexName
+    ): Response {
         return $this->request('delete', "/indexes/{$indexName}");
     }
 
-    public function listIndexes()
+    public function listIndexes(): Response
     {
         return $this->request('get', '/indexes');
     }
 
-    public function getIndex(string $indexName)
-    {
+    public function getIndex(
+        string $indexName
+    ): Response {
         return $this->request('get', "/indexes/{$indexName}");
     }
 
-    public function query(string $indexName, array $query, array $options = [])
-    {
+    public function query(
+        string $indexName,
+        array $query,
+        array $options = []
+    ): Response {
         $queryRequest = [
             'query' => $query,
             'options' => $options,
@@ -115,8 +137,10 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function createCollection(string $collectionName, string $sourceIndex)
-    {
+    public function createCollection(
+        string $collectionName,
+        string $sourceIndex
+    ): Response {
         $createCollectionRequest = [
             'name' => $collectionName,
             'source_index' => $sourceIndex,
@@ -127,23 +151,28 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function deleteCollection(string $collectionName)
-    {
+    public function deleteCollection(
+        string $collectionName
+    ): Response {
         return $this->request('delete', "/collections/{$collectionName}");
     }
 
-    public function describeCollection(string $collectionName)
-    {
+    public function describeCollection(
+        string $collectionName
+    ): Response {
         return $this->request('get', "/collections/{$collectionName}");
     }
 
-    public function listCollections()
+    public function listCollections(): Response
     {
         return $this->request('get', '/collections');
     }
 
-    public function upsert(string $indexName, array $vectors, string $namespace = null)
-    {
+    public function upsert(
+        string $indexName,
+        array $vectors,
+        string $namespace = null
+    ): Response {
         $upsertRequest = [
             'vectors' => $vectors,
             'namespace' => $namespace,
@@ -154,8 +183,12 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function queryVector(string $indexName, array $vector, array $options = [], string $namespace = null)
-    {
+    public function queryVector(
+        string $indexName,
+        array $vector,
+        array $options = [],
+        string $namespace = null
+    ): Response {
         $queryRequest = [
             'vector' => $vector,
             'options' => $options,
@@ -167,8 +200,14 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function update(string $indexName, string $vectorId, array $values, array $metadata = [], array $options = [], string $namespace = null)
-    {
+    public function update(
+        string $indexName,
+        string $vectorId,
+        array $values,
+        array $metadata = [],
+        array $options = [],
+        string $namespace = null
+    ): Response {
         $updateRequest = [
             'values' => $values,
             'metadata' => $metadata,
@@ -181,8 +220,12 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function fetch(string $indexName, array $ids, array $options = [], string $namespace = null)
-    {
+    public function fetch(
+        string $indexName,
+        array $ids,
+        array $options = [],
+        string $namespace = null
+    ): Response {
         $fetchRequest = [
             'ids' => $ids,
             'options' => $options,
@@ -194,8 +237,12 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function delete(string $indexName, array $ids, array $options = [], string $namespace = null)
-    {
+    public function delete(
+        string $indexName,
+        array $ids,
+        array $options = [],
+        string $namespace = null
+    ): Response {
         $deleteRequest = [
             'ids' => $ids,
             'options' => $options,
@@ -207,8 +254,11 @@ class Pinecone implements PineconeContract
         ]);
     }
 
-    public function deleteAll(string $indexName, array $options = [], string $namespace = null)
-    {
+    public function deleteAll(
+        string $indexName,
+        array $options = [],
+        string $namespace = null
+    ): Response {
         $deleteAllRequest = [
             'options' => $options,
             'namespace' => $namespace,

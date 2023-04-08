@@ -2,47 +2,217 @@
 
 namespace AdrianMejias\Pinecone\Contracts;
 
+use AdrianMejias\Pinecone\Pinecone;
+use Illuminate\Http\Client\Response;
+
 interface PineconeContract
 {
-    public function setApiKey(string $apiKey);
+    /**
+     * @param string $apiKey
+     * @return \AdrianMejias\Pinecone\Pinecone
+     */
+    public function setApiKey(
+        string $apiKey
+    ): Pinecone;
 
-    public function setEnvironment(string $environment);
+    /**
+     * @param string $environment
+     * @return \AdrianMejias\Pinecone\Pinecone
+     */
+    public function setEnvironment(
+        string $environment
+    ): Pinecone;
 
-    public function setEndpoint(string $endpoint);
+    /**
+     * @param string $endpoint
+     * @return \AdrianMejias\Pinecone\Pinecone
+     */
+    public function setEndpoint(
+        string $endpoint
+    ): Pinecone;
 
-    public function getApiKey();
+    /**
+     * @return string|null
+     */
+    public function getApiKey(): ?string;
 
-    public function getEnvironment();
+    /**
+     * @return string|null
+     */
+    public function getEnvironment(): ?string;
 
-    public function getEndpoint();
+    /**
+     * @return string|null
+     */
+    public function getEndpoint(): ?string;
 
-    public function createIndex(string $indexName, array $schema);
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array<string, mixed> $options
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function request(
+        string $method,
+        string $uri = '',
+        array $options = []
+    ): Response;
 
-    public function deleteIndex(string $indexName);
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $schema
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function createIndex(
+        string $indexName,
+        array $schema
+    ): Response;
 
-    public function listIndexes();
+    /**
+     * @param string $indexName
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function deleteIndex(
+        string $indexName
+    ): Response;
 
-    public function getIndex(string $indexName);
+    /**
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function listIndexes(): Response;
 
-    public function query(string $indexName, array $query, array $options = []);
+    /**
+     * @param string $indexName
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function getIndex(
+        string $indexName
+    ): Response;
 
-    public function createCollection(string $collectionName, string $sourceIndex);
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $query
+     * @param array<string, mixed> $options
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function query(
+        string $indexName,
+        array $query,
+        array $options = []
+    ): Response;
 
-    public function deleteCollection(string $collectionName);
+    /**
+     * @param string $collectionName
+     * @param string $sourceIndex
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function createCollection(
+        string $collectionName,
+        string $sourceIndex
+    ): Response;
 
-    public function describeCollection(string $collectionName);
+    /**
+     * @param string $collectionName
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function deleteCollection(
+        string $collectionName
+    ): Response;
 
-    public function listCollections();
+    /**
+     * @param string $collectionName
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function describeCollection(
+        string $collectionName
+    ): Response;
 
-    public function upsert(string $indexName, array $vectors, string $namespace = null);
+    /**
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function listCollections(): Response;
 
-    public function queryVector(string $indexName, array $vector, array $options = [], string $namespace = null);
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $vectors
+     * @param string|null $namespace
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function upsert(
+        string $indexName,
+        array $vectors,
+        string $namespace = null
+    ): Response;
 
-    public function update(string $indexName, string $vectorId, array $values, array $metadata = [], array $options = [], string $namespace = null);
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $vector
+     * @param array<string, mixed> $options
+     * @param string|null $namespace
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function queryVector(
+        string $indexName,
+        array $vector,
+        array $options = [],
+        string $namespace = null
+    ): Response;
 
-    public function fetch(string $indexName, array $ids, array $options = [], string $namespace = null);
+    /**
+     * @param string $indexName
+     * @param string $vectorId
+     * @param array<string, mixed> $values
+     * @param array<string, mixed> $metadata
+     * @param array<string, mixed> $options
+     * @param string|null $namespace
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function update(
+        string $indexName,
+        string $vectorId,
+        array $values,
+        array $metadata = [],
+        array $options = [],
+        string $namespace = null
+    ): Response;
 
-    public function delete(string $indexName, array $ids, array $options = [], string $namespace = null);
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $ids
+     * @param array<string, mixed> $options
+     * @param string|null $namespace
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function fetch(
+        string $indexName,
+        array $ids,
+        array $options = [],
+        string $namespace = null
+    ): Response;
 
-    public function deleteAll(string $indexName, array $options = [], string $namespace = null);
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $ids
+     * @param array<string, mixed> $options
+     * @param string|null $namespace
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function delete(
+        string $indexName,
+        array $ids,
+        array $options = [],
+        string $namespace = null
+    ): Response;
+
+    /**
+     * @param string $indexName
+     * @param array<string, mixed> $options
+     * @param string|null $namespace
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function deleteAll(
+        string $indexName,
+        array $options = [],
+        string $namespace = null
+    ): Response;
 }

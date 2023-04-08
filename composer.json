@@ -24,7 +24,8 @@
         "orchestra/testbench": "^6.0",
         "pestphp/pest": "^1.22",
         "phpunit/phpunit": "^9.5",
-        "pestphp/pest-plugin-laravel": "^1.4"
+        "pestphp/pest-plugin-laravel": "^1.4",
+        "phpstan/phpstan": "^1.10"
     },
     "autoload": {
         "psr-4": {
@@ -36,8 +37,6 @@
             "AdrianMejias\\Pinecone\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
@@ -49,8 +48,15 @@
         }
     },
     "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    }
+    },
+    "branch-alias": {
+        "dev-master": "1.0-dev"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

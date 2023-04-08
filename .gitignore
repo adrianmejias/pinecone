@@ -1,5 +1,6 @@
 .env
 .env.testing
 vendor/
+composer.lock
 phpunit.xml
 .phpunit.result.cache
