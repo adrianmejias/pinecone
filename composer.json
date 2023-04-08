@@ -1,0 +1,56 @@
+{
+    "name": "adrianmejias/pinecone",
+    "description": "This package provides a Laravel wrapper for the Pinecone API.",
+    "type": "library",
+    "keywords": [
+        "pinecone",
+        "api",
+        "laravel"
+    ],
+    "homepage": "https://github.com/adrianmejias/pinecone",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adrian Mejias",
+            "email": "adrianmejias@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "illuminate/support": "^8.0",
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "pestphp/pest": "^1.22",
+        "phpunit/phpunit": "^9.5",
+        "pestphp/pest-plugin-laravel": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "AdrianMejias\\Pinecone\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AdrianMejias\\Pinecone\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AdrianMejias\\Pinecone\\PineconeServiceProvider"
+            ],
+            "aliases": {
+                "Pinecone": "AdrianMejias\\Pinecone\\Facades\\Pinecone"
+            }
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
