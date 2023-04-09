@@ -40,6 +40,9 @@ $response = Pinecone::createIndex('my-index', [
     'field_1' => 'int32',
     'field_2' => 'float32',
 ]);
+
+// Query with namespace
+$response = Pinecone::namespace('example-namespace')->query(10);
 ```
 
 This will create an index named `my-index` with two `fields`, `field1` and `field2`.
@@ -48,27 +51,29 @@ This will create an index named `my-index` with two `fields`, `field1` and `fiel
 
 The following methods are available via the Pinecone Facade:
 
-- `setApiKey`*(string $apiKey)*: PineconeContract: sets the API key to be used for Pinecone requests
-- `setEnvironment`*(string $environment)*: PineconeContract: sets the Pinecone environment to be used
-- `setEndpoint`*(string $endpoint)*: PineconeContract: sets the Pinecone controller host to be used
-- `getApiKey`*(): ?string*: gets the current API key being used
-- `getEnvironment`*(): ?string*: gets the current Pinecone environment being used
-- `getEndpoint`*(): ?string*: gets the current Pinecone controller host being used
-- `createIndex`*(string $indexName, array $schema): mixed*: creates an index with the given name and schema
-- `deleteIndex`*(string $indexName): mixed*: deletes the index with the given name
-- `listIndexes`*(): mixed*: retrieves a list of all indexes
-- `getIndex`*(string $indexName): mixed*: retrieves information about the index with the given name
-- `query`*(string $indexName, array $query, array $options = []): mixed*: queries the index with the given name using the specified query and options
-- `createCollection`*(string $collectionName, string $sourceIndex): mixed*: creates a new collection with the specified name and source index
-- `deleteCollection`*(string $collectionName): mixed*: deletes the collection with the given name
-- `describeCollection`*(string $collectionName): mixed*: retrieves information about the collection with the given name
-- `listCollections`*(): mixed*: retrieves a list of all collections
-- `upsert`*(string $indexName, array $vectors, string $namespace = null): mixed*: adds or updates the specified vectors in the index with the given name
-- `queryVector`*(string $indexName, array $vector, array $options = [], string $namespace = null): mixed*: queries the index with the given name using the specified vector and options
-- `update`*(string $indexName, string $vectorId, array $values, array $metadata = [], array $options = [], string $namespace = null): mixed*: updates the vector with the specified ID in the index with the given name
-- `fetch`*(string $indexName, array $ids, array $options = [], string $namespace = null): mixed*: retrieves the vectors with the specified IDs from the index with the given name
-- `delete`*(string $indexName, array $ids, array $options = [], string $namespace = null): mixed*: deletes the vectors with the specified IDs from the index with the given name
-- `deleteAll`*(string $indexName, array $options = [], string $namespace = null): mixed*: deletes all vectors in the index with the given name.
+- setApiKey(string $apiKey): Pinecone: Sets the API key to be used for Pinecone requests
+- setEnvironment(string $environment): Pinecone: Sets the Pinecone environment to be used
+- setEndpoint(string $endpoint): Pinecone: Sets the Pinecone controller host to be used
+- getApiKey(): ?string: Gets the current API key being used
+- getEnvironment(): ?string: Gets the current Pinecone environment being used
+- getEndpoint(): ?string: Gets the current Pinecone controller host being used
+- namespace(string $namespace): Pinecone: Sets the namespace to be used for Pinecone requests
+- createIndex(string $indexName, int $dimension, array $options = []): Response: Creates an index with the given name and dimension
+- deleteIndex(string $indexName): Response: Deletes the index with the given name
+- listIndexes(): Response: Retrieves a list of all indexes
+- describeIndex(string $indexName): Response: Retrieves information about the index with the given name
+- configureIndex(string $indexName, ?array $options = []): Response: Configures an index with the given options
+- createCollection(string $collectionName, string $sourceIndex): Response: Creates a new collection with the specified name and source index
+- deleteCollection(string $collectionName): Response: Deletes the collection with the given name
+- describeCollection(string $collectionName): Response: Retrieves information about the collection with the given name
+- listCollections(): Response: Retrieves a list of all collections
+- describeIndexStats(?array $filter = []): Response: Retrieves statistics about the index with the given filter
+- query(int $topK, ?array $options = []): Response: Queries the index with the given top K and options
+- delete(?array $ids = [], ?array $filters = []): Response: Deletes vectors from the index with the given IDs or filters
+- deleteAll(?array $ids = [], ?array $filters = []): Response: Deletes all vectors from the index with the given IDs or filters
+- fetch(array $ids): Response: Retrieves vectors from the index with the given IDs
+- update(string $id, ?array $options = []): Response: Updates the vector with the specified ID in the index with the given options
+- upsert(array $vectors): Response: Adds or updates the specified vectors in the index
 
 Please refer to the [official Pinecone API documentation](https://docs.pinecone.io/docs) for more information on how to use the API.
 

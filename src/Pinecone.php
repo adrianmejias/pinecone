@@ -16,6 +16,11 @@ class Pinecone implements PineconeContract
     private $config;
 
     /**
+     * @var string
+     */
+    private $namespace;
+
+    /**
      * @param \Illuminate\Config\Repository $config
      */
     public function __construct(
@@ -68,20 +73,16 @@ class Pinecone implements PineconeContract
         string $uri = '',
         array $options = []
     ): Response {
-        $headers = [
-            'Authorization' => 'Bearer ' . $this->config->get('pinecone.api_key'),
-            'Content-Type' => 'application/json',
-            'X-Pinecone-Environment' => $this->config->get('pinecone.environment'),
-        ];
-
-        $options['headers'] = array_merge($options['headers'] ?? [], $headers);
-
-        $url = $this->config->get('pinecone.controller_host') . $uri;
-
         return Http::withHeaders(
-            $options['headers']
+            array_merge($options['headers'] ?? [], [
+                'Api-Key' => $this->config->get('pinecone.api_key'),
+            ])
         )
-            ->$method($url, $options['json'] ?? [])
+            ->asJson()
+            ->$method(
+                $this->config->get('pinecone.controller_host') . '/' . ltrim($uri, '/'),
+                $options['json'] ?? []
+            )
             ->throw(function ($response, $exception) {
                 throw new PineconeException(
                     $exception->getMessage(),
@@ -91,49 +92,50 @@ class Pinecone implements PineconeContract
             });
     }
 
+    public function namespace(
+        string $namespace
+    ): Pinecone {
+        $this->namespace = $namespace;
+
+        return $this;
+    }
+
     public function createIndex(
         string $indexName,
-        array $schema
+        int $dimension,
+        array $options = []
     ): Response {
-        $createIndexRequest = [
-            'name' => $indexName,
-            'schema' => $schema,
-        ];
-
-        return $this->request('post', '/indexes', [
-            'json' => $createIndexRequest
+        return $this->request('post', '/databases', [
+            'json' => array_merge($options, [
+                'name' => $indexName,
+                'dimension' => $dimension,
+            ]),
         ]);
     }
 
     public function deleteIndex(
         string $indexName
     ): Response {
-        return $this->request('delete', "/indexes/{$indexName}");
+        return $this->request('delete', "/databases/{$indexName}");
     }
 
     public function listIndexes(): Response
     {
-        return $this->request('get', '/indexes');
+        return $this->request('get', '/databases');
     }
 
-    public function getIndex(
+    public function describeIndex(
         string $indexName
     ): Response {
-        return $this->request('get', "/indexes/{$indexName}");
+        return $this->request('get', "/databases/{$indexName}");
     }
 
-    public function query(
+    public function configureIndex(
         string $indexName,
-        array $query,
-        array $options = []
+        ?array $options = [],
     ): Response {
-        $queryRequest = [
-            'query' => $query,
-            'options' => $options,
-        ];
-
-        return $this->request('post', "/indexes/{$indexName}/query", [
-            'json' => $queryRequest
+        return $this->request('patch', "/databases/{$indexName}", [
+            'json' => $options,
         ]);
     }
 
@@ -141,13 +143,11 @@ class Pinecone implements PineconeContract
         string $collectionName,
         string $sourceIndex
     ): Response {
-        $createCollectionRequest = [
-            'name' => $collectionName,
-            'source_index' => $sourceIndex,
-        ];
-
         return $this->request('post', '/collections', [
-            'json' => $createCollectionRequest
+            'json' => [
+                'name' => $collectionName,
+                'source_index' => $sourceIndex,
+            ],
         ]);
     }
 
@@ -168,104 +168,87 @@ class Pinecone implements PineconeContract
         return $this->request('get', '/collections');
     }
 
-    public function upsert(
-        string $indexName,
-        array $vectors,
-        string $namespace = null
+    public function describeIndexStats(
+        ?array $filter = []
     ): Response {
-        $upsertRequest = [
-            'vectors' => $vectors,
-            'namespace' => $namespace,
-        ];
-
-        return $this->request('post', "/indexes/{$indexName}/vectors", [
-            'json' => $upsertRequest
+        return $this->request('post', '/describe_index_stats', [
+            'json' => [
+                'filter' => $filter,
+            ],
         ]);
     }
 
-    public function queryVector(
-        string $indexName,
-        array $vector,
-        array $options = [],
-        string $namespace = null
+    public function query(
+        int $topK,
+        ?array $options = []
     ): Response {
-        $queryRequest = [
-            'vector' => $vector,
-            'options' => $options,
-            'namespace' => $namespace,
-        ];
-
-        return $this->request('post', "/indexes/{$indexName}/query", [
-            'json' => $queryRequest
-        ]);
-    }
-
-    public function update(
-        string $indexName,
-        string $vectorId,
-        array $values,
-        array $metadata = [],
-        array $options = [],
-        string $namespace = null
-    ): Response {
-        $updateRequest = [
-            'values' => $values,
-            'metadata' => $metadata,
-            'options' => $options,
-            'namespace' => $namespace,
-        ];
-
-        return $this->request('put', "/indexes/{$indexName}/vectors/{$vectorId}", [
-            'json' => $updateRequest
-        ]);
-    }
-
-    public function fetch(
-        string $indexName,
-        array $ids,
-        array $options = [],
-        string $namespace = null
-    ): Response {
-        $fetchRequest = [
-            'ids' => $ids,
-            'options' => $options,
-            'namespace' => $namespace,
-        ];
-
-        return $this->request('post', "/indexes/{$indexName}/vectors/fetch", [
-            'json' => $fetchRequest
+        return $this->request('post', '/query', [
+            'json' => array_merge($options, [
+                'topK' => $topK,
+                'namespace' => $this->namespace ?: $this->namespace,
+            ]),
         ]);
     }
 
     public function delete(
-        string $indexName,
-        array $ids,
-        array $options = [],
-        string $namespace = null
+        ?array $ids = [],
+        ?array $filters = []
     ): Response {
-        $deleteRequest = [
-            'ids' => $ids,
-            'options' => $options,
-            'namespace' => $namespace,
-        ];
-
-        return $this->request('post', "/indexes/{$indexName}/vectors/delete", [
-            'json' => $deleteRequest
+        return $this->request('delete', '/vectors/delete', [
+            'json' => [
+                'ids' => $ids ?: [],
+                'namespace' => $this->namespace ?: $this->namespace,
+                'deleteAll' => false,
+                'filters' => $filters,
+            ],
         ]);
     }
 
     public function deleteAll(
-        string $indexName,
-        array $options = [],
-        string $namespace = null
+        ?array $ids = [],
+        ?array $filters = []
     ): Response {
-        $deleteAllRequest = [
-            'options' => $options,
-            'namespace' => $namespace,
-        ];
+        return $this->request('delete', '/vectors/delete', [
+            'json' => [
+                'ids' => $ids ?: [],
+                'namespace' => $this->namespace ?: $this->namespace,
+                'deleteAll' => true,
+                'filters' => $filters,
+            ],
+        ]);
+    }
 
-        return $this->request('post', "/indexes/{$indexName}/vectors/delete_all", [
-            'json' => $deleteAllRequest
+    public function fetch(
+        array $ids
+    ): Response {
+        return $this->request('get', '/vectors/fetch', [
+            'json' => [
+                'ids' => $ids ?: [],
+                'namespace' => $this->namespace ?: $this->namespace,
+            ],
+        ]);
+    }
+
+    public function update(
+        string $id,
+        ?array $options = []
+    ): Response {
+        return $this->request('post', '/vectors/update', [
+            'json' => array_merge($options, [
+                'id' => $id,
+                'namespace' => $this->namespace ?: $this->namespace,
+            ]),
+        ]);
+    }
+
+    public function upsert(
+        array $vectors
+    ): Response {
+        return $this->request('post', '/vectors/upsert', [
+            'json' => [
+                'vectors' => $vectors,
+                'namespace' => $this->namespace ?: $this->namespace,
+            ],
         ]);
     }
 }

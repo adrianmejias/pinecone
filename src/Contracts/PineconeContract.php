@@ -59,13 +59,21 @@ interface PineconeContract
     ): Response;
 
     /**
+     * @param string $namespace
+     * @return \AdrianMejias\Pinecone\Pinecone
+     */
+    public function namespace(string $namespace): Pinecone;
+
+    /**
      * @param string $indexName
+     * @param int $dimension
      * @param array<string, mixed> $schema
      * @return \Illuminate\Http\Client\Response
      */
     public function createIndex(
         string $indexName,
-        array $schema
+        int $dimension,
+        array $options = []
     ): Response;
 
     /**
@@ -85,20 +93,18 @@ interface PineconeContract
      * @param string $indexName
      * @return \Illuminate\Http\Client\Response
      */
-    public function getIndex(
+    public function describeIndex(
         string $indexName
     ): Response;
 
     /**
      * @param string $indexName
-     * @param array<string, mixed> $query
      * @param array<string, mixed> $options
      * @return \Illuminate\Http\Client\Response
      */
-    public function query(
+    public function configureIndex(
         string $indexName,
-        array $query,
-        array $options = []
+        ?array $options = []
     ): Response;
 
     /**
@@ -133,86 +139,67 @@ interface PineconeContract
     public function listCollections(): Response;
 
     /**
-     * @param string $indexName
-     * @param array<string, mixed> $vectors
-     * @param string|null $namespace
+     * @param array<string, mixed> $filter
      * @return \Illuminate\Http\Client\Response
      */
-    public function upsert(
-        string $indexName,
-        array $vectors,
-        string $namespace = null
+    public function describeIndexStats(
+        ?array $filter = []
     ): Response;
 
     /**
-     * @param string $indexName
-     * @param array<string, mixed> $vector
-     * @param array<string, mixed> $options
-     * @param string|null $namespace
+     * @param string $topK
+     * @param array<string, mixed>|null $options
      * @return \Illuminate\Http\Client\Response
      */
-    public function queryVector(
-        string $indexName,
-        array $vector,
-        array $options = [],
-        string $namespace = null
+    public function query(
+        int $topK,
+        ?array $options = []
     ): Response;
 
     /**
-     * @param string $indexName
-     * @param string $vectorId
-     * @param array<string, mixed> $values
-     * @param array<string, mixed> $metadata
-     * @param array<string, mixed> $options
-     * @param string|null $namespace
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function update(
-        string $indexName,
-        string $vectorId,
-        array $values,
-        array $metadata = [],
-        array $options = [],
-        string $namespace = null
-    ): Response;
-
-    /**
-     * @param string $indexName
-     * @param array<string, mixed> $ids
-     * @param array<string, mixed> $options
-     * @param string|null $namespace
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function fetch(
-        string $indexName,
-        array $ids,
-        array $options = [],
-        string $namespace = null
-    ): Response;
-
-    /**
-     * @param string $indexName
-     * @param array<string, mixed> $ids
-     * @param array<string, mixed> $options
-     * @param string|null $namespace
+     * @param array<string>|null $ids
+     * @param array<string, mixed>|null $filters
      * @return \Illuminate\Http\Client\Response
      */
     public function delete(
-        string $indexName,
-        array $ids,
-        array $options = [],
-        string $namespace = null
+        ?array $ids = [],
+        ?array $filters = []
     ): Response;
 
     /**
-     * @param string $indexName
-     * @param array<string, mixed> $options
+     * @param array<string>|null $ids
      * @param string|null $namespace
+     * @param array<string, mixed>|null $filters
      * @return \Illuminate\Http\Client\Response
      */
     public function deleteAll(
-        string $indexName,
-        array $options = [],
-        string $namespace = null
+        ?array $ids = [],
+        ?array $filters = []
+    ): Response;
+
+    /**
+     * @param array<string> $ids
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function fetch(
+        array $ids
+    ): Response;
+
+    /**
+     * @param string $id
+     * @param array<string, mixed>|null $options
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function update(
+        string $id,
+        ?array $options = []
+    ): Response;
+
+    /**
+     * @param array<string, mixed> $vectors
+     * @return \Illuminate\Http\Client\Response
+     */
+    public function upsert(
+        array $vectors
     ): Response;
 }

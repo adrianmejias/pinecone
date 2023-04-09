@@ -5,4 +5,9 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="PINECONE_API_KEY" value=""/>
+        <env name="PINECONE_ENVIRONMENT" value=""/>
+    </php>
 </phpunit>
