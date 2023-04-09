@@ -26,8 +26,7 @@
         "pestphp/pest": "^1.0|^2.0",
         "pestphp/pest-plugin-laravel": "^1.0",
         "phpstan/phpstan": "^1.0",
-        "phpunit/phpunit": "^8.0|^9.0|^10.0",
-        "vlucas/phpdotenv": "^5.5"
+        "phpunit/phpunit": "^8.0|^9.0|^10.0"
     },
     "autoload": {
         "psr-4": {
