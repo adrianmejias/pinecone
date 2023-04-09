@@ -49,13 +49,13 @@ interface PineconeContract
     /**
      * @param string $method
      * @param string $uri
-     * @param array<string, mixed> $options
+     * @param array<string, mixed>|null $options
      * @return \Illuminate\Http\Client\Response
      */
     public function request(
         string $method,
         string $uri = '',
-        array $options = []
+        ?array $options = []
     ): Response;
 
     /**
@@ -67,13 +67,13 @@ interface PineconeContract
     /**
      * @param string $indexName
      * @param int $dimension
-     * @param array<string, mixed> $schema
+     * @param array<string, mixed>|null $options
      * @return \Illuminate\Http\Client\Response
      */
     public function createIndex(
         string $indexName,
         int $dimension,
-        array $options = []
+        ?array $options = []
     ): Response;
 
     /**
@@ -147,7 +147,7 @@ interface PineconeContract
     ): Response;
 
     /**
-     * @param string $topK
+     * @param int $topK
      * @param array<string, mixed>|null $options
      * @return \Illuminate\Http\Client\Response
      */
@@ -168,7 +168,6 @@ interface PineconeContract
 
     /**
      * @param array<string>|null $ids
-     * @param string|null $namespace
      * @param array<string, mixed>|null $filters
      * @return \Illuminate\Http\Client\Response
      */

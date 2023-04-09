@@ -71,7 +71,7 @@ class Pinecone implements PineconeContract
     public function request(
         string $method,
         string $uri = '',
-        array $options = []
+        ?array $options = []
     ): Response {
         return Http::withHeaders(
             array_merge($options['headers'] ?? [], [
@@ -103,10 +103,10 @@ class Pinecone implements PineconeContract
     public function createIndex(
         string $indexName,
         int $dimension,
-        array $options = []
+        ?array $options = []
     ): Response {
         return $this->request('post', '/databases', [
-            'json' => array_merge($options, [
+            'json' => array_merge($options ?? [], [
                 'name' => $indexName,
                 'dimension' => $dimension,
             ]),
@@ -183,7 +183,7 @@ class Pinecone implements PineconeContract
         ?array $options = []
     ): Response {
         return $this->request('post', '/query', [
-            'json' => array_merge($options, [
+            'json' => array_merge($options ?? [], [
                 'topK' => $topK,
                 'namespace' => $this->namespace ?: $this->namespace,
             ]),
@@ -234,7 +234,7 @@ class Pinecone implements PineconeContract
         ?array $options = []
     ): Response {
         return $this->request('post', '/vectors/update', [
-            'json' => array_merge($options, [
+            'json' => array_merge($options ?? [], [
                 'id' => $id,
                 'namespace' => $this->namespace ?: $this->namespace,
             ]),
