@@ -17,7 +17,8 @@ it('can upsert', function () {
             'id' => 'test-id-2',
         ],
     ];
-    $response = Pinecone::upsert($vectors);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->upsert($vectors);
     expect($response->status())->toEqual(200);
 });
 
@@ -35,6 +36,7 @@ it('can upsert with namespace', function () {
             'id' => 'test-id-2',
         ],
     ];
-    $response = Pinecone::namespace('example-namespace')->upsert($vectors);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->namespace('example-namespace')->upsert($vectors);
     expect($response->status())->toEqual(200);
 });

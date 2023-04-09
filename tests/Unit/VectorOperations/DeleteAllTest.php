@@ -10,6 +10,7 @@ it('can delete all', function () {
 
     $ids = ['test-id-1', 'test-id-2'];
     $filters = ['test-filter-1', 'test-filter-2'];
-    $response = Pinecone::deleteAll($ids, $filters);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->deleteAll($ids, $filters);
     expect($response->status())->toEqual(200);
 });

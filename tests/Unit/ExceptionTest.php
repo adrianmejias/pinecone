@@ -9,9 +9,9 @@ it('can throw an exception for bad response', function () {
         '*/databases' => Http::response([], 500),
     ]);
 
-    $indexName = 'test_index';
+    $indexName = 'test_index'; // bad index name
     $dimension = 128;
-    $response = Pinecone::createIndex($indexName, $dimension);
+    $response = Pinecone::index($indexName)->create($dimension);
     expect($response->status())->toEqual(500);
 })
     ->throws(

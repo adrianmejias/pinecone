@@ -9,5 +9,6 @@
         <env name="APP_ENV" value="testing"/>
         <env name="PINECONE_API_KEY" value=""/>
         <env name="PINECONE_ENVIRONMENT" value=""/>
+        <env name="PINECONE_PROJECT_ID" value=""/>
     </php>
 </phpunit>

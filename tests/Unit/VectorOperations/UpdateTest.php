@@ -9,7 +9,8 @@ it('can update', function () {
     ]);
 
     $id = 'test-id';
-    $response = Pinecone::update($id);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->update($id);
     expect($response->status())->toEqual(200);
 });
 
@@ -19,6 +20,7 @@ it('can update with namespace', function () {
     ]);
 
     $id = 'test-id';
-    $response = Pinecone::namespace('example-namespace')->update($id);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->namespace('example-namespace')->update($id);
     expect($response->status())->toEqual(200);
 });

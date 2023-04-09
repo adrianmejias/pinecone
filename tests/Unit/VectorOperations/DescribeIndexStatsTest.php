@@ -19,6 +19,7 @@ it('can describe index stats', function () {
         ], 200),
     ]);
 
-    $response = Pinecone::describeIndexStats();
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->describeIndexStats();
     expect($response->status())->toEqual(200);
 });

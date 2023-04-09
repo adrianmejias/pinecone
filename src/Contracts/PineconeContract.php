@@ -4,6 +4,9 @@ namespace AdrianMejias\Pinecone\Contracts;
 
 use AdrianMejias\Pinecone\Pinecone;
 use Illuminate\Http\Client\Response;
+use AdrianMejias\Pinecone\PineconeVector;
+use AdrianMejias\Pinecone\PineconeIndex;
+use AdrianMejias\Pinecone\PineconeCollection;
 
 interface PineconeContract
 {
@@ -21,6 +24,14 @@ interface PineconeContract
      */
     public function setEnvironment(
         string $environment
+    ): Pinecone;
+
+    /**
+     * @param string $projectId
+     * @return \AdrianMejias\Pinecone\Pinecone
+     */
+    public function setProjectId(
+        string $projectId
     ): Pinecone;
 
     /**
@@ -44,6 +55,11 @@ interface PineconeContract
     /**
      * @return string|null
      */
+    public function getProjectId(): ?string;
+
+    /**
+     * @return string|null
+     */
     public function getEndpoint(): ?string;
 
     /**
@@ -59,146 +75,20 @@ interface PineconeContract
     ): Response;
 
     /**
-     * @param string $namespace
-     * @return \AdrianMejias\Pinecone\Pinecone
-     */
-    public function namespace(string $namespace): Pinecone;
-
-    /**
      * @param string $indexName
-     * @param int $dimension
-     * @param array<string, mixed>|null $options
-     * @return \Illuminate\Http\Client\Response
+     * @return \AdrianMejias\Pinecone\PineconeVector
      */
-    public function createIndex(
-        string $indexName,
-        int $dimension,
-        ?array $options = []
-    ): Response;
+    public function vector(string $indexName): PineconeVector;
 
     /**
-     * @param string $indexName
-     * @return \Illuminate\Http\Client\Response
+     * @param string|null $indexName
+     * @return \AdrianMejias\Pinecone\PineconeIndex
      */
-    public function deleteIndex(
-        string $indexName
-    ): Response;
-
-    /**
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function listIndexes(): Response;
-
-    /**
-     * @param string $indexName
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function describeIndex(
-        string $indexName
-    ): Response;
-
-    /**
-     * @param string $indexName
-     * @param array<string, mixed> $options
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function configureIndex(
-        string $indexName,
-        ?array $options = []
-    ): Response;
+    public function index(?string $indexName = null): PineconeIndex;
 
     /**
      * @param string $collectionName
-     * @param string $sourceIndex
-     * @return \Illuminate\Http\Client\Response
+     * @return \AdrianMejias\Pinecone\PineconeCollection
      */
-    public function createCollection(
-        string $collectionName,
-        string $sourceIndex
-    ): Response;
-
-    /**
-     * @param string $collectionName
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function deleteCollection(
-        string $collectionName
-    ): Response;
-
-    /**
-     * @param string $collectionName
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function describeCollection(
-        string $collectionName
-    ): Response;
-
-    /**
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function listCollections(): Response;
-
-    /**
-     * @param array<string, mixed> $filter
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function describeIndexStats(
-        ?array $filter = []
-    ): Response;
-
-    /**
-     * @param int $topK
-     * @param array<string, mixed>|null $options
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function query(
-        int $topK,
-        ?array $options = []
-    ): Response;
-
-    /**
-     * @param array<string>|null $ids
-     * @param array<string, mixed>|null $filters
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function delete(
-        ?array $ids = [],
-        ?array $filters = []
-    ): Response;
-
-    /**
-     * @param array<string>|null $ids
-     * @param array<string, mixed>|null $filters
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function deleteAll(
-        ?array $ids = [],
-        ?array $filters = []
-    ): Response;
-
-    /**
-     * @param array<string> $ids
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function fetch(
-        array $ids
-    ): Response;
-
-    /**
-     * @param string $id
-     * @param array<string, mixed>|null $options
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function update(
-        string $id,
-        ?array $options = []
-    ): Response;
-
-    /**
-     * @param array<string, mixed> $vectors
-     * @return \Illuminate\Http\Client\Response
-     */
-    public function upsert(
-        array $vectors
-    ): Response;
+    public function collection(?string $collectionName = null): PineconeCollection;
 }

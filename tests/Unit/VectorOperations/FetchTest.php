@@ -46,7 +46,8 @@ it('can fetch', function () {
     ]);
 
     $ids = ['test-id-1', 'test-id-2'];
-    $response = Pinecone::fetch($ids);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->fetch($ids);
     expect($response->status())->toEqual(200);
 });
 
@@ -93,6 +94,7 @@ it('can fetch with namespace', function () {
     ]);
 
     $ids = ['test-id-1', 'test-id-2'];
-    $response = Pinecone::namespace('example-namespace')->fetch($ids);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->namespace('example-namespace')->fetch($ids);
     expect($response->status())->toEqual(200);
 });

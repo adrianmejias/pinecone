@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Http;
 
 it('can create an index', function () {
     Http::fake([
-        '*/databases' => Http::response([], 200),
+        '*/databases' => Http::response('string', 201),
     ]);
 
     $indexName = 'test-index';
@@ -16,6 +16,6 @@ it('can create an index', function () {
         'replicas' => 1,
         'pod_type' => 'p1.x1',
     ];
-    $response = Pinecone::createIndex($indexName, $dimension, $options);
-    expect($response->status())->toEqual(200);
+    $response = Pinecone::index($indexName)->create($dimension, $options);
+    expect($response->status())->toEqual(201);
 });

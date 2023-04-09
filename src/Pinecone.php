@@ -7,6 +7,7 @@ use Illuminate\Config\Repository as Config;
 use AdrianMejias\Pinecone\Contracts\PineconeContract;
 use AdrianMejias\Pinecone\Exceptions\PineconeException;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Str;
 
 class Pinecone implements PineconeContract
 {
@@ -18,7 +19,7 @@ class Pinecone implements PineconeContract
     /**
      * @var string
      */
-    private $namespace;
+    private $indexName;
 
     /**
      * @param \Illuminate\Config\Repository $config
@@ -45,6 +46,14 @@ class Pinecone implements PineconeContract
         return $this;
     }
 
+    public function setProjectId(
+        string $projectId
+    ): Pinecone {
+        $this->config->set('pinecone.project_id', $projectId);
+
+        return $this;
+    }
+
     public function setEndpoint(
         string $endpoint
     ): Pinecone {
@@ -63,6 +72,11 @@ class Pinecone implements PineconeContract
         return $this->config->get('pinecone.environment');
     }
 
+    public function getProjectId(): ?string
+    {
+        return $this->config->get('pinecone.project_id');
+    }
+
     public function getEndpoint(): ?string
     {
         return $this->config->get('pinecone.controller_host');
@@ -73,6 +87,16 @@ class Pinecone implements PineconeContract
         string $uri = '',
         ?array $options = []
     ): Response {
+        $host = $this->config->get('pinecone.controller_host');
+
+        if ($this->indexName) {
+            $host = Str::replace(
+                'index_name',
+                $this->indexName,
+                $this->config->get('pinecone.index_host')
+            );
+        }
+
         return Http::withHeaders(
             array_merge($options['headers'] ?? [], [
                 'Api-Key' => $this->config->get('pinecone.api_key'),
@@ -80,7 +104,7 @@ class Pinecone implements PineconeContract
         )
             ->asJson()
             ->$method(
-                $this->config->get('pinecone.controller_host') . '/' . ltrim($uri, '/'),
+                $host . '/' . ltrim($uri, '/'),
                 $options['json'] ?? []
             )
             ->throw(function ($response, $exception) {
@@ -92,163 +116,23 @@ class Pinecone implements PineconeContract
             });
     }
 
-    public function namespace(
-        string $namespace
-    ): Pinecone {
-        $this->namespace = $namespace;
-
-        return $this;
-    }
-
-    public function createIndex(
-        string $indexName,
-        int $dimension,
-        ?array $options = []
-    ): Response {
-        return $this->request('post', '/databases', [
-            'json' => array_merge($options ?? [], [
-                'name' => $indexName,
-                'dimension' => $dimension,
-            ]),
-        ]);
-    }
-
-    public function deleteIndex(
+    public function vector(
         string $indexName
-    ): Response {
-        return $this->request('delete', "/databases/{$indexName}");
+    ): PineconeVector {
+        $this->indexName = $indexName;
+
+        return new PineconeVector($this);
     }
 
-    public function listIndexes(): Response
-    {
-        return $this->request('get', '/databases');
+    public function index(
+        ?string $indexName = null
+    ): PineconeIndex {
+        return new PineconeIndex($this, $indexName);
     }
 
-    public function describeIndex(
-        string $indexName
-    ): Response {
-        return $this->request('get', "/databases/{$indexName}");
-    }
-
-    public function configureIndex(
-        string $indexName,
-        ?array $options = [],
-    ): Response {
-        return $this->request('patch', "/databases/{$indexName}", [
-            'json' => $options,
-        ]);
-    }
-
-    public function createCollection(
-        string $collectionName,
-        string $sourceIndex
-    ): Response {
-        return $this->request('post', '/collections', [
-            'json' => [
-                'name' => $collectionName,
-                'source_index' => $sourceIndex,
-            ],
-        ]);
-    }
-
-    public function deleteCollection(
-        string $collectionName
-    ): Response {
-        return $this->request('delete', "/collections/{$collectionName}");
-    }
-
-    public function describeCollection(
-        string $collectionName
-    ): Response {
-        return $this->request('get', "/collections/{$collectionName}");
-    }
-
-    public function listCollections(): Response
-    {
-        return $this->request('get', '/collections');
-    }
-
-    public function describeIndexStats(
-        ?array $filter = []
-    ): Response {
-        return $this->request('post', '/describe_index_stats', [
-            'json' => [
-                'filter' => $filter,
-            ],
-        ]);
-    }
-
-    public function query(
-        int $topK,
-        ?array $options = []
-    ): Response {
-        return $this->request('post', '/query', [
-            'json' => array_merge($options ?? [], [
-                'topK' => $topK,
-                'namespace' => $this->namespace ?: $this->namespace,
-            ]),
-        ]);
-    }
-
-    public function delete(
-        ?array $ids = [],
-        ?array $filters = []
-    ): Response {
-        return $this->request('delete', '/vectors/delete', [
-            'json' => [
-                'ids' => $ids ?: [],
-                'namespace' => $this->namespace ?: $this->namespace,
-                'deleteAll' => false,
-                'filters' => $filters,
-            ],
-        ]);
-    }
-
-    public function deleteAll(
-        ?array $ids = [],
-        ?array $filters = []
-    ): Response {
-        return $this->request('delete', '/vectors/delete', [
-            'json' => [
-                'ids' => $ids ?: [],
-                'namespace' => $this->namespace ?: $this->namespace,
-                'deleteAll' => true,
-                'filters' => $filters,
-            ],
-        ]);
-    }
-
-    public function fetch(
-        array $ids
-    ): Response {
-        return $this->request('get', '/vectors/fetch', [
-            'json' => [
-                'ids' => $ids ?: [],
-                'namespace' => $this->namespace ?: $this->namespace,
-            ],
-        ]);
-    }
-
-    public function update(
-        string $id,
-        ?array $options = []
-    ): Response {
-        return $this->request('post', '/vectors/update', [
-            'json' => array_merge($options ?? [], [
-                'id' => $id,
-                'namespace' => $this->namespace ?: $this->namespace,
-            ]),
-        ]);
-    }
-
-    public function upsert(
-        array $vectors
-    ): Response {
-        return $this->request('post', '/vectors/upsert', [
-            'json' => [
-                'vectors' => $vectors,
-                'namespace' => $this->namespace ?: $this->namespace,
-            ],
-        ]);
+    public function collection(
+        ?string $collectionName = null
+    ): PineconeCollection {
+        return new PineconeCollection($this, $collectionName);
     }
 }

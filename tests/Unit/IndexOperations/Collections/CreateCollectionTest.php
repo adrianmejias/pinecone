@@ -5,11 +5,11 @@ use Illuminate\Support\Facades\Http;
 
 it('can create an collection', function () {
     Http::fake([
-        '*/collections' => Http::response([], 200),
+        '*/collections' => Http::response('string', 201),
     ]);
 
     $collectionName = 'test-collection';
     $source = 'test-source';
-    $response = Pinecone::createCollection($collectionName, $source);
-    expect($response->status())->toEqual(200);
+    $response = Pinecone::collection($collectionName)->create($source);
+    expect($response->status())->toEqual(201);
 });

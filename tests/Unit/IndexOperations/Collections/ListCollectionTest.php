@@ -5,14 +5,15 @@ use Illuminate\Support\Facades\Http;
 
 it('can list indexes', function () {
     Http::fake([
-        '*/collections' => Http::response([], 200),
+        '*/collections' => Http::response([
+            'string',
+        ], 200),
     ]);
 
     $collectionName = 'test-collection';
     $source = 'test-source';
-    $response = Pinecone::createCollection($collectionName, $source);
-    expect($response->status())->toEqual(200);
+    $response = Pinecone::collection($collectionName)->create($source);
 
-    $response = Pinecone::listCollections();
+    $response = Pinecone::collection()->list();
     expect($response->status())->toEqual(200);
 });

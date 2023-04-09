@@ -57,7 +57,8 @@ it('can query', function () {
             ],
         ],
     ];
-    $response = Pinecone::query($topK, $options);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->query($topK, $options);
     expect($response->status())->toEqual(200);
 });
 
@@ -115,6 +116,7 @@ it('can query with namespace', function () {
             ],
         ],
     ];
-    $response = Pinecone::namespace('example-namespace')->query($topK, $options);
+    $indexName = 'test-index';
+    $response = Pinecone::vector($indexName)->namespace('example-namespace')->query($topK, $options);
     expect($response->status())->toEqual(200);
 });
