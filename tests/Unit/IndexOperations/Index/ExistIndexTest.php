@@ -3,7 +3,7 @@
 use AdrianMejias\Pinecone\Facades\Pinecone;
 use Illuminate\Support\Facades\Http;
 
-it('can describe an index', function () {
+it('can check if an index exists', function () {
     Http::fake([
         '*/databases' => Http::response('string', 201),
         '*/databases/*' => Http::response([
@@ -38,6 +38,6 @@ it('can describe an index', function () {
     ];
     $response = Pinecone::index($indexName)->create($dimension, $options);
 
-    $response = Pinecone::index($indexName)->describe();
-    expect($response->status())->toEqual(200);
+    $response = Pinecone::index($indexName)->exists();
+    expect($response)->toBeTrue();
 });

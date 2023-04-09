@@ -7,6 +7,11 @@ use Illuminate\Http\Client\Response;
 interface PineconeIndexContract
 {
     /**
+     * @return bool
+     */
+    public function exists(): bool;
+
+    /**
      * @param int $dimension
      * @param array<string, mixed>|null $options
      * @return \Illuminate\Http\Client\Response

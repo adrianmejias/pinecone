@@ -3,7 +3,7 @@
 use AdrianMejias\Pinecone\Facades\Pinecone;
 use Illuminate\Support\Facades\Http;
 
-it('can describe a collection', function () {
+it('can check if a collection exists', function () {
     Http::fake([
         '*/collections' => Http::response('string', 201),
         '*/collections/*' => Http::response([
@@ -17,6 +17,6 @@ it('can describe a collection', function () {
     $source = 'test-source';
     $response = Pinecone::collection($collectionName)->create($source);
 
-    $response = Pinecone::collection($collectionName)->describe();
-    expect($response->status())->toEqual(200);
+    $response = Pinecone::collection($collectionName)->exists();
+    expect($response)->toBeTrue();
 });

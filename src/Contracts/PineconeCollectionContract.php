@@ -7,6 +7,11 @@ use Illuminate\Http\Client\Response;
 interface PineconeCollectionContract
 {
     /**
+     * @return bool
+     */
+    public function exists(): bool;
+
+    /**
      * @param string $sourceIndex
      * @return \Illuminate\Http\Client\Response
      */

@@ -3,7 +3,7 @@
 use AdrianMejias\Pinecone\Facades\Pinecone;
 use Illuminate\Support\Facades\Http;
 
-it('can list indexes', function () {
+it('can list collections', function () {
     Http::fake([
         '*/collections' => Http::response([
             'string',

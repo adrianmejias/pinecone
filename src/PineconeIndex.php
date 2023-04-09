@@ -29,6 +29,11 @@ class PineconeIndex implements PineconeIndexContract
         $this->indexName = $indexName;
     }
 
+    public function exists(): bool
+    {
+        return $this->describe()->successful();
+    }
+
     public function create(
         int $dimension,
         ?array $options = []

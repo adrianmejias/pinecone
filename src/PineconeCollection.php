@@ -29,6 +29,11 @@ class PineconeCollection implements PineconeCollectionContract
         $this->collectionName = $collectionName;
     }
 
+    public function exists(): bool
+    {
+        return $this->describe()->successful();
+    }
+    
     public function create(
         string $sourceIndex
     ): Response {
