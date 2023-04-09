@@ -70,7 +70,7 @@ return [
 
     'index_host' => env(
         'PINECONE_CONTROLLER_HOST',
-        'https://index_name-' . env('PROJECT_ID', '') . '.svc.environment.pinecone.io'
+        'https://index_name-' . env('PINECONE_PROJECT_ID', '') . '.svc.environment.pinecone.io'
     ),
 
 ];
