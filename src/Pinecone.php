@@ -84,7 +84,7 @@ class Pinecone implements PineconeContract
             ->$method($url, $options['json'] ?? [])
             ->throw(function ($response, $exception) {
                 throw new PineconeException(
-                    $response->json(),
+                    $response->body(),
                     $exception->getCode(),
                     $exception
                 );
