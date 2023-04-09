@@ -1,5 +1,10 @@
 # Pinecone PHP Package
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/adrianmejias/pinecone.svg?style=flat-square)](https://packagist.org/packages/adrianmejias/pinecone)
+[![tests](https://github.com/adrianmejias/pinecone/actions/workflows/tests.yml/badge.svg)](https://github.com/adrianmejias/pinecone/actions/workflows/tests.yml)
+[![static analysis](https://github.com/adrianmejias/pinecone/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/adrianmejias/pinecone/actions/workflows/static-analysis.yml)
+[![License](https://img.shields.io/packagist/l/adrianmejias/pinecone.svg?style=flat-square)](https://packagist.org/packages/adrianmejias/pinecone)
+
 This package provides a Laravel wrapper for the Pinecone API. It enables you to easily interact with the Pinecone API in your Laravel projects.
 
 ## Installation
