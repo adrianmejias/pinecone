@@ -8,6 +8,7 @@ use AdrianMejias\Pinecone\Contracts\PineconeContract;
 use AdrianMejias\Pinecone\Exceptions\PineconeException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
+use Exception;
 
 class Pinecone implements PineconeContract
 {
@@ -28,6 +29,18 @@ class Pinecone implements PineconeContract
         Config $config
     ) {
         $this->config = $config;
+
+        if (empty($this->getApiKey())) {
+            throw new PineconeException('Api key is required');
+        }
+
+        if (empty($this->getEnvironment())) {
+            throw new PineconeException('Environment is required');
+        }
+
+        if (empty($this->getProjectId())) {
+            throw new PineconeException('Project id is required');
+        }
     }
 
     public function setApiKey(
@@ -87,6 +100,10 @@ class Pinecone implements PineconeContract
         string $uri = '',
         ?array $options = []
     ): Response {
+        if (!in_array($method, ['get', 'post', 'put', 'delete', 'patch'])) {
+            throw new PineconeException('Invalid method');
+        }
+
         $host = $this->config->get('pinecone.controller_host');
 
         if ($this->indexName) {
@@ -97,23 +114,24 @@ class Pinecone implements PineconeContract
             );
         }
 
-        return Http::withHeaders(
-            array_merge($options['headers'] ?? [], [
-                'Api-Key' => $this->config->get('pinecone.api_key'),
-            ])
-        )
-            ->asJson()
-            ->$method(
-                $host . '/' . ltrim($uri, '/'),
-                $options['json'] ?? []
+        $uri = $host . '/' . ltrim($uri, '/');
+        $ignoreForExists = $options['ignore_for_exists'] ?? false;
+
+        try {
+            return Http::withHeaders(
+                array_merge($options['headers'] ?? [], [
+                    'Api-Key' => $this->config->get('pinecone.api_key'),
+                ])
             )
-            ->throw(function ($response, $exception) {
-                throw new PineconeException(
-                    $exception->getMessage(),
-                    $exception->getCode(),
-                    $exception
-                );
-            });
+                ->asJson()
+                ->$method(
+                    $uri,
+                    $options['json'] ?? []
+                )
+                ->throwIf($ignoreForExists === false);
+        } catch (Exception $e) {
+            throw new PineconeException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function vector(

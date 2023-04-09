@@ -31,7 +31,9 @@ class PineconeIndex implements PineconeIndexContract
 
     public function exists(): bool
     {
-        return $this->describe()->successful();
+        return $this->pinecone->request('get', "/databases/{$this->indexName}", [
+            'ignore_for_exists' => true,
+        ])->successful();
     }
 
     public function create(

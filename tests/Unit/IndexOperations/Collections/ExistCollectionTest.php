@@ -20,3 +20,17 @@ it('can check if a collection exists', function () {
     $response = Pinecone::collection($collectionName)->exists();
     expect($response)->toBeTrue();
 });
+
+it('can check if a collection does not exists', function () {
+    Http::fake([
+        '*/collections' => Http::response('string', 201),
+        '*/collections/*' => Http::response([], 404),
+    ]);
+
+    $collectionName = 'test-collection';
+    $source = 'test-source';
+    $response = Pinecone::collection($collectionName)->create($source);
+
+    $response = Pinecone::collection($collectionName)->exists();
+    expect($response)->toBeFalse();
+});

@@ -31,9 +31,11 @@ class PineconeCollection implements PineconeCollectionContract
 
     public function exists(): bool
     {
-        return $this->describe()->successful();
+        return $this->pinecone->request('get', "/collections/{$this->collectionName}", [
+            'ignore_for_exists' => true,
+        ])->successful();
     }
-    
+
     public function create(
         string $sourceIndex
     ): Response {
