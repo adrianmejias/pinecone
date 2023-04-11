@@ -52,3 +52,8 @@ jobs:
 
       - name: Execute unit tests
         run: vendor/bin/pest
+        env:
+          APP_ENV: testing
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_ENVIRONMENT: ${{ secrets.PINECONE_ENVIRONMENT }}
+          PINECONE_PROJECT_ID: ${{ secrets.PINECONE_PROJECT_ID }}
